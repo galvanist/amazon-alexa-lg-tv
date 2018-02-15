@@ -52,7 +52,7 @@ See https://github.com/klattimer/LGWebOSRemote for a full list of triggers.
 - Authenticate with `python lgtv.py auth [IP Address]`, this creates an `~/.lgtv.json`
 - Start the script with `python alexa-tv.py`
 - Enable "Mobile TV On"
-- On the Alexa App, go to "Smart Home" > "Devices" > "Discover" for Alexa to find all commands
+- On the Alexa App, go to "Smart Home" > "Devices" > "Add Device" for Alexa to find all commands
 
 When you try to turn on/off the TV for the first you will need to allow the script to access your TV. Alternatively, run `python lgtv.py auth [IP Address]`
 
