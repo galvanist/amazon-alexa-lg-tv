@@ -20,11 +20,20 @@ from debounce_handler import debounce_handler
 
 logging.basicConfig(level=logging.DEBUG)
 
+APPS = {
+    'netflix': 'netflix',
+    'plex': 'cdp-30',
+    'amazon': 'lovefilm',
+}
+
 class device_handler(debounce_handler):
     """Publishes the on/off state requested,
        and the IP address of the Echo making the request.
     """
-    TRIGGERS = {"tv": 52000, "plex":52001, "volume": 52002, "netflix": 52003, "playback": 52004}
+
+    ACTIONS = ['tv', 'volume', 'mute', 'playback']
+
+    TRIGGERS = {key: n+52000 for n, key in enumerate(ACTIONS+APPS.keys())}
 
     def act(self, client_address, state, name):
         print "State", state, "on ", name, "from client @", client_address
@@ -34,18 +43,12 @@ class device_handler(debounce_handler):
         elif name == "tv" and state == False:
             os.system("python lgtv.py off")
             print "TV turned off!"
-        elif name == "plex" and state == True:
-            os.system("python lgtv.py startApp cdp-30")
-            print "Launched Plex"
-        elif name == "plex" and state == False:
-            os.system("python lgtv.py closeApp cdp-30")
-            print "Closed Plex"
-        elif name == "netflix" and state == True:
-            os.system("python lgtv.py startApp netflix")
-            print "Launched Netflix"
-        elif name == "netflix" and state == False:
-            os.system("python lgtv.py closeApp netflix")
-            print "Closed Netflix"
+        elif name == "mute" and state == True:
+            os.system("python lgtv.py mute true")
+            print "Muted"
+        elif name == "mute" and state == False:
+            os.system("python lgtv.py mute false")
+            print "Unmuted"
         elif name == "volume" and state == True:
             os.system("python lgtv.py setVolume 44")
             print "Volume set to FOURTYFOUR"
@@ -58,6 +61,12 @@ class device_handler(debounce_handler):
         elif name == "playback" and state == False:
             os.system("python lgtv.py inputMediaPause")
             print "Playback set to PAUSE"
+        elif name in APPS and state == True:
+            os.system("python lgtv.py startApp {}".format(APPS[name]))
+            print "Started app {}".format(name)
+        elif name in APPS and state == False:
+            os.system("python lgtv.py closeApp {}".format(APPS[name]))
+            print "Stopped app {}".format(name)
         return True
 
 
