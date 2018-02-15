@@ -50,8 +50,8 @@ class device_handler(debounce_handler):
             os.system("python lgtv.py mute false")
             print "Unmuted"
         elif name == "volume" and state == True:
-            os.system("python lgtv.py setVolume 44")
-            print "Volume set to FOURTYFOUR"
+            os.system("python lgtv.py setVolume 20")
+            print "Volume set to TWENTY"
         elif name == "volume" and state == False:
             os.system("python lgtv.py setVolume 0")
             print "Volume set to ZERO"
