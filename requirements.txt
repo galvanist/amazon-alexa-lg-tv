@@ -1,9 +1,7 @@
 certifi==2018.1.18
 chardet==3.0.4
-fauxmo==0.4.5
 idna==2.6
 requests==2.18.4
 urllib3==1.22
-wakeonlan==0.2.2
+wakeonlan==1.0.0
 ws4py==0.4.3
-wsgiref==0.1.2
