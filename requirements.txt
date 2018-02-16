@@ -3,5 +3,5 @@ chardet==3.0.4
 idna==2.6
 requests==2.18.4
 urllib3==1.22
-wakeonlan==1.0.0
+wakeonlan==0.2.2
 ws4py==0.4.3
