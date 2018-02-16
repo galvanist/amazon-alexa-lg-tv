@@ -12,18 +12,23 @@
     do different things based on which Echo triggered the handler.
 """
 
-import fauxmo
 import logging
 import time
-import os
+
+import fauxmo
+from lgtv import LGTVClient
+
 from debounce_handler import debounce_handler
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 APPS = {
     'netflix': 'netflix',
-    'plex': 'cdp-30',
     'amazon': 'lovefilm',
+    'now tv': 'now.tv',
+    'iplayer': 'bbc.iplayer.3.0',
+    'itv': 'com.fvp.itv',
+    'four': 'com.fvp.ch4',
 }
 
 class device_handler(debounce_handler):
@@ -36,39 +41,32 @@ class device_handler(debounce_handler):
     TRIGGERS = {key: n+52000 for n, key in enumerate(ACTIONS+APPS.keys())}
 
     def act(self, client_address, state, name):
-        print "State", state, "on ", name, "from client @", client_address
+        print "State {} on {} from client @ {}".format(state, name, client_address)
+        ws = LGTVClient()
         if name == "tv" and state == True:
-            os.system("python lgtv.py on")
-            print "Magic packet sent to turn on TV!"
-        elif name == "tv" and state == False:
-            os.system("python lgtv.py off")
-            print "TV turned off!"
+            ws.on()
+        else:
+            ws.connect() # for any following command
+        if name == "tv" and state == False:
+            ws.exec_command('off', {})
         elif name == "mute" and state == True:
-            os.system("python lgtv.py mute true")
-            print "Muted"
+            ws.exec_command('mute', {'muted': True})
         elif name == "mute" and state == False:
-            os.system("python lgtv.py mute false")
-            print "Unmuted"
+            ws.exec_command('mute', {'muted': False})
         elif name == "volume" and state == True:
-            os.system("python lgtv.py setVolume 20")
-            print "Volume set to TWENTY"
+            ws.exec_command('setVolume', {'level': 10})
         elif name == "volume" and state == False:
-            os.system("python lgtv.py setVolume 0")
-            print "Volume set to ZERO"
+            ws.exec_command('setVolume', {'level': 0})
         elif name == "playback" and state == True:
-            os.system("python lgtv.py inputMediaPlay")
-            print "Playback set to RESUME"
+            ws.exec_command('inputMediaPlay', {})
         elif name == "playback" and state == False:
-            os.system("python lgtv.py inputMediaPause")
-            print "Playback set to PAUSE"
+            ws.exec_command('inputMediaPause', {})
         elif name in APPS and state == True:
-            os.system("python lgtv.py startApp {}".format(APPS[name]))
-            print "Started app {}".format(name)
+            ws.exec_command('startApp', {'appid': APPS[name]})
         elif name in APPS and state == False:
-            os.system("python lgtv.py closeApp {}".format(APPS[name]))
-            print "Stopped app {}".format(name)
+            ws.exec_command('closeApp', {'appid': APPS[name]})
         return True
-
+        ws.run_forever()
 
 if __name__ == "__main__":
     # Startup the fauxmo server
